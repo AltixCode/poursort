@@ -1,3 +1,4 @@
+import Feather from '@expo/vector-icons/Feather';
 import { useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { Pressable, View } from 'react-native';
@@ -114,10 +115,16 @@ export default function Levels() {
                   backgroundColor: result ? colors.surface : colors.surfaceAlt,
                   borderWidth: result ? 1 : 0,
                   borderColor: colors.accent,
-                  opacity: unlocked ? 1 : 0.4,
                 }}
               >
+                {/* The dimming was the ONLY visible marker of a locked level --
+                    nothing else on the cell changed -- and it took the number to
+                    2.65:1. A lock icon carries the state at full contrast, which
+                    is what the sibling grids in knotter and foldup already do. */}
                 <Text variant="callout">{String(level)}</Text>
+                {unlocked ? null : (
+                  <Feather name="lock" size={11} color={colors.textMuted} />
+                )}
                 {result ? (
                   <Text variant="micro" tone="accent">
                     {'★'.repeat(result.stars)}
