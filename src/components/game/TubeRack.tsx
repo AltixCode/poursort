@@ -35,8 +35,20 @@ export function TubeRack({
 
   const gap = spacing.md;
   const available = width - spacing.base * 2;
-  const tubeWidth = Math.min(58, Math.floor((available - gap * (perRow - 1)) / perRow));
-  const unit = Math.min(34, Math.floor((height * 0.42) / (rows * state.capacity)));
+
+  // Sized from the space there is, not from fixed maxima. The old caps of 58pt
+  // wide and 34pt per unit were set against a small phone: on a 6.9" screen they
+  // left the rack occupying the top third and the rest of the display empty,
+  // which reads as an app that has never been opened on a modern device.
+  const clamp = (value: number, low: number, high: number) => Math.max(low, Math.min(high, value));
+  const unit = clamp(Math.floor((height * 0.52) / (rows * state.capacity)), 18, 52);
+  // Tube width follows the unit so a tube keeps its proportions rather than
+  // becoming a wide letterbox on a tablet.
+  const tubeWidth = clamp(
+    Math.floor((available - gap * (perRow - 1)) / perRow),
+    26,
+    Math.round(unit * 1.9),
+  );
   const tubeHeight = unit * state.capacity;
 
   return (
