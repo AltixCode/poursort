@@ -25,3 +25,17 @@ export function isLevelUnlocked(level: number, highestCleared: number, isPremium
   if (level <= highestCleared + 1 && level <= FREE_LEVELS) return true;
   return isPremium && level <= highestCleared + 1;
 }
+
+/**
+ * Whether a level is closed because it has to be BOUGHT, rather than because
+ * the player has not got there yet.
+ *
+ * The level select drew a padlock on both and sent both to the paywall, which
+ * put a wall of padlocks directly beneath a card reading "The first 40 are
+ * always free" and offered to sell level 2 -- a free level the player simply
+ * had not reached. A padlock means "paid"; progression is not a padlock.
+ */
+export function isLevelBehindPurchase(level: number, isPremium: boolean): boolean {
+  if (level < 1 || level > TOTAL_LEVELS) return false;
+  return level > FREE_LEVELS && !isPremium;
+}

@@ -1,4 +1,4 @@
-import { FREE_LEVELS, TOTAL_LEVELS, isLevelUnlocked, starsFor } from '../stars';
+import { FREE_LEVELS, TOTAL_LEVELS, isLevelBehindPurchase, isLevelUnlocked, starsFor } from '../stars';
 
 describe('starsFor', () => {
   it('gives three for par', () => {
@@ -51,5 +51,32 @@ describe('isLevelUnlocked', () => {
   it('refuses a level outside the shipped range', () => {
     expect(isLevelUnlocked(0, 10, true)).toBe(false);
     expect(isLevelUnlocked(TOTAL_LEVELS + 1, TOTAL_LEVELS, true)).toBe(false);
+  });
+});
+
+describe('isLevelBehindPurchase', () => {
+  // The distinction this draws is the whole point: a padlock and the paywall
+  // are for levels that cost money, not for levels the player has not reached.
+  it('is false for a free level the player has not reached yet', () => {
+    expect(isLevelBehindPurchase(2, false)).toBe(false);
+    expect(isLevelUnlocked(2, 0, false)).toBe(false);
+  });
+
+  it('is false for every level inside the free allowance', () => {
+    expect(isLevelBehindPurchase(1, false)).toBe(false);
+    expect(isLevelBehindPurchase(FREE_LEVELS, false)).toBe(false);
+  });
+
+  it('is true for the first level past the allowance when not premium', () => {
+    expect(isLevelBehindPurchase(FREE_LEVELS + 1, false)).toBe(true);
+  });
+
+  it('is false past the allowance once bought', () => {
+    expect(isLevelBehindPurchase(FREE_LEVELS + 1, true)).toBe(false);
+  });
+
+  it('is false outside the level range', () => {
+    expect(isLevelBehindPurchase(0, false)).toBe(false);
+    expect(isLevelBehindPurchase(TOTAL_LEVELS + 1, false)).toBe(false);
   });
 });
