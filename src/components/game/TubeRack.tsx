@@ -41,7 +41,16 @@ export function TubeRack({
   // left the rack occupying the top third and the rest of the display empty,
   // which reads as an app that has never been opened on a modern device.
   const clamp = (value: number, low: number, high: number) => Math.max(low, Math.min(high, value));
-  const unit = clamp(Math.floor((height * 0.52) / (rows * state.capacity)), 18, 52);
+
+  // The ceiling has to scale with the display, or it becomes the same bug one
+  // size up. 52pt was chosen against a 6.9" phone; on a 13" iPad the height
+  // term offers roughly 180pt per unit and the constant throws it away, so the
+  // rack sits in the top 45% of the screen with a large dead region beneath --
+  // which is the very thing the comment above describes, recurring at tablet
+  // scale. Measured on iPad 13 during QA: board and controls occupying y=0-700
+  // of 1376pt.
+  const maxUnit = width >= 700 ? 96 : 52;
+  const unit = clamp(Math.floor((height * 0.52) / (rows * state.capacity)), 18, maxUnit);
   // Tube width follows the unit so a tube keeps its proportions rather than
   // becoming a wide letterbox on a tablet.
   const tubeWidth = clamp(
