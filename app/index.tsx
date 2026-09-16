@@ -7,7 +7,7 @@ import { BannerAdSlot } from '@/components/BannerAdSlot';
 import { Screen, Text } from '@/components/ui';
 import { t } from '@/i18n';
 import { gridMetrics } from '@/logic/gridLayout';
-import { FREE_LEVELS, TOTAL_LEVELS, isLevelUnlocked } from '@/logic/stars';
+import { FREE_LEVELS, TOTAL_LEVELS, isLevelBehindPurchase, isLevelUnlocked } from '@/logic/stars';
 import { useLevelsStore } from '@/store/useLevelsStore';
 import { usePremiumStore } from '@/store/usePremiumStore';
 import { useTheme } from '@/theme';
@@ -114,6 +114,7 @@ export default function Levels() {
           {Array.from({ length: VISIBLE }, (_, i) => i + 1).map((level) => {
             const result = results[level];
             const unlocked = isLevelUnlocked(level, highest, isPremium);
+            const paid = isLevelBehindPurchase(level, isPremium);
             return (
               <Pressable
                 key={level}
@@ -124,7 +125,16 @@ export default function Levels() {
                     : t('levelLabel', { number: level })
                 }
                 accessibilityState={{ disabled: !unlocked }}
-                onPress={() => (unlocked ? router.push(`/level/${level}`) : router.push('/paywall'))}
+                // Only offer to sell what is actually for sale. A level inside
+                // the free 40 that the player has not reached yet is not a
+                // purchase, so tapping it must not open the paywall.
+                onPress={() => {
+                  if (unlocked) {
+                    router.push(`/level/${level}`);
+                  } else if (paid) {
+                    router.push('/paywall');
+                  }
+                }}
                 style={{
                   width: cellSize,
                   height: cellSize,
@@ -141,9 +151,9 @@ export default function Levels() {
                     2.65:1. A lock icon carries the state at full contrast, which
                     is what the sibling grids in knotter and foldup already do. */}
                 <Text variant="callout">{String(level)}</Text>
-                {unlocked ? null : (
+                {paid ? (
                   <Feather name="lock" size={11} color={colors.textMuted} />
-                )}
+                ) : null}
                 {result ? (
                   <Text variant="micro" tone="accent">
                     {'★'.repeat(result.stars)}
