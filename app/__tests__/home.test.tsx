@@ -48,9 +48,18 @@ describe('Levels', () => {
     expect(testRouter.push).toHaveBeenCalledWith('/level/1');
   });
 
-  it('sends a free player to the paywall for a locked level', async () => {
+  // Level 30 is inside the free 40 and merely unreached. This test used to
+  // assert it opened the paywall, which is the defect: the app offered to sell
+  // a level it advertises as free, on a screen that says so two cards above.
+  it('does not sell a free level the player has not reached yet', async () => {
     const { getByLabelText } = await renderWithProviders(<Levels />);
     await fireEvent.press(getByLabelText(t('levelLabel', { number: 30 })));
+    expect(testRouter.push).not.toHaveBeenCalled();
+  });
+
+  it('sends a free player to the paywall for a level that is actually paid', async () => {
+    const { getByLabelText } = await renderWithProviders(<Levels />);
+    await fireEvent.press(getByLabelText(t('levelLabel', { number: FREE_LEVELS + 1 })));
     expect(testRouter.push).toHaveBeenCalledWith('/paywall');
   });
 
