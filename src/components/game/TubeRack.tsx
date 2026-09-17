@@ -49,8 +49,27 @@ export function TubeRack({
   // which is the very thing the comment above describes, recurring at tablet
   // scale. Measured on iPad 13 during QA: board and controls occupying y=0-700
   // of 1376pt.
-  const maxUnit = width >= 700 ? 96 : 52;
-  const unit = clamp(Math.floor((height * 0.52) / (rows * state.capacity)), 18, maxUnit);
+  //
+  // The 96 above was still the binding constraint, because it was chosen to keep
+  // a tube proportional to its width -- and on a 13" iPad the width is already
+  // spent: five tubes side by side leave about 185pt each, so no amount of
+  // vertical room can make a tube wider. Measured post-scale during QA: the rack
+  // and its controls ended at 656pt of 1376, so 52% of the display was empty.
+  //
+  // The room that is left is vertical, so the tube takes it vertically and stops
+  // being width-proportional on a tablet. A test tube is a tall narrow vessel;
+  // letting it be one is closer to the object than holding it to a phone's
+  // aspect ratio. Deliberately stopping short of filling the screen -- this
+  // changes the character of the segments, which become squarer, and that is a
+  // judgement better made against a device than in arithmetic.
+  const isTablet = width >= 700;
+  const heightFraction = isTablet ? 0.6 : 0.52;
+  const maxUnit = isTablet ? 150 : 52;
+  const unit = clamp(
+    Math.floor((height * heightFraction) / (rows * state.capacity)),
+    18,
+    maxUnit,
+  );
   // Tube width follows the unit so a tube keeps its proportions rather than
   // becoming a wide letterbox on a tablet.
   const tubeWidth = clamp(
@@ -117,9 +136,13 @@ export function TubeRack({
                       position: 'absolute',
                       top: 0,
                       alignSelf: 'center',
-                      width: unit * 0.5,
-                      height: unit * 0.5,
-                      borderRadius: unit * 0.25,
+                      // Sized from the tube's width, not from `unit`. This dot
+                      // is a round marker sitting above a tube, so the tube's
+                      // horizontal measure is the one it belongs to -- keyed to
+                      // `unit` it became a 75pt blob the moment segments grew.
+                      width: tubeWidth * 0.4,
+                      height: tubeWidth * 0.4,
+                      borderRadius: tubeWidth * 0.2,
                       backgroundColor: colourAt(top),
                     }}
                   />
