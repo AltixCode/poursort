@@ -1,0 +1,35 @@
+{
+  "identifier": "2FB05B0D-0833-4DF9-8F22-2F6F0262882C",
+  "nonRenewingSubscriptions": [],
+  "products": [
+    {
+      "displayPrice": "4.99",
+      "familyShareable": false,
+      "internalID": "FB298F83-0C51-4673-8D45-C43E52A94B8F",
+      "localizations": [
+        {
+          "description": "poursort remove ads lifetime unlock",
+          "displayName": "poursort remove ads",
+          "locale": "en_US"
+        }
+      ],
+      "productID": "com.altixcode.poursort.removeads",
+      "referenceName": "poursort remove ads",
+      "type": "NonConsumable"
+    }
+  ],
+  "settings": {
+    "_applicationInternalID": "",
+    "_developerTeamID": "",
+    "_failTransactionsEnabled": false,
+    "_lastSynchronizedDate": 0,
+    "_locale": "en_US",
+    "_storefront": "USA",
+    "_storeKitErrors": []
+  },
+  "subscriptionGroups": [],
+  "version": {
+    "major": 4,
+    "minor": 0
+  }
+}
