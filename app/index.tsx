@@ -54,7 +54,7 @@ export default function Levels() {
             flexDirection: 'row',
             alignItems: 'flex-end',
             justifyContent: 'space-between',
-            marginTop: spacing['2xl'],
+            marginTop: spacing.sm,
           }}
         >
           <Text variant="display">{t('levelsTitle')}</Text>
@@ -68,8 +68,8 @@ export default function Levels() {
           accessibilityLabel={`${t('continueLevel')} — ${t('levelLabel', { number: next })}`}
           onPress={() => router.push(`/level/${next}`)}
           style={{
-            marginTop: spacing.lg,
-            minHeight: 64,
+            marginTop: spacing.md,
+            minHeight: 56,
             paddingHorizontal: spacing.lg,
             justifyContent: 'center',
             borderRadius: radius.lg,
@@ -109,7 +109,13 @@ export default function Levels() {
 
         <View
           onLayout={(e) => setGridWidth(e.nativeEvent.layout.width)}
-          style={{ flexDirection: 'row', flexWrap: 'wrap', gap: GRID_GAP, marginTop: spacing.xl }}
+          style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            gap: GRID_GAP,
+            marginTop: spacing.lg,
+          }}
         >
           {Array.from({ length: VISIBLE }, (_, i) => i + 1).map((level) => {
             const result = results[level];

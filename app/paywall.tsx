@@ -121,11 +121,11 @@ export default function Paywall() {
 
       <ScrollView
         contentContainerStyle={{
-          padding: spacing.xl,
+          paddingHorizontal: spacing.xl,
+          paddingTop: spacing.sm,
           paddingBottom: spacing["3xl"],
           ...tabletColumn,
           flexGrow: 1,
-          justifyContent: "center",
         }}
       >
         <Text variant="micro" tone="accent">

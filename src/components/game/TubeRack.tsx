@@ -122,13 +122,18 @@ export function TubeRack({
                     backgroundColor: colors.surface,
                   }}
                 >
-                  {/* Bottom-first, matching the data, so nothing has to be reversed. */}
-                  {tube.map((colour, depth) => (
-                    <View
-                      key={depth}
-                      style={{ height: unit, backgroundColor: colourAt(colour) }}
-                    />
-                  ))}
+                  {/* Render from topOf(tube) down to bottom index 0, or bottom-first at flex-end.
+                      In flex column, top elements appear first. tube[tube.length - 1] is the top of the tube,
+                      while tube[0] is the bottom. Reversing the array ensures the top liquid is at the visual top. */}
+                  {tube
+                    .slice()
+                    .reverse()
+                    .map((colour, i) => (
+                      <View
+                        key={tube.length - 1 - i}
+                        style={{ height: unit, backgroundColor: colourAt(colour) }}
+                      />
+                    ))}
                 </View>
                 {top !== undefined && isSelected ? (
                   <View
