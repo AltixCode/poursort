@@ -7,6 +7,7 @@ import { BannerAdSlot } from '@/components/BannerAdSlot';
 import { TubeRack } from '@/components/game/TubeRack';
 import { Button, Screen, Text } from '@/components/ui';
 import { useLevel } from '@/hooks/useLevel';
+import { useSoundEffects } from '@/hooks/useSoundEffects';
 import { t } from '@/i18n';
 import { shouldShowInterstitial } from '@/monetization/adPolicy';
 import { showInterstitial } from '@/monetization/interstitial';
@@ -33,6 +34,7 @@ function LevelSession({ level }: { level: number }) {
   const router = useRouter();
   const { colors, spacing } = useTheme();
   const { state: initial, par } = useLevel(level);
+  const play = useSoundEffects();
 
   const [history, setHistory] = useState<LevelState[]>([initial]);
   const [selected, setSelected] = useState<number | null>(null);
@@ -52,6 +54,7 @@ function LevelSession({ level }: { level: number }) {
     if (!won || recorded.current) return;
     recorded.current = true;
     void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    play('success');
     recordClear(level, state.moves, par);
 
     // After the win is on screen, behind its own pacing — never during play.
@@ -65,7 +68,7 @@ function LevelSession({ level }: { level: number }) {
     ) {
       showInterstitial();
     }
-  }, [won, level, state.moves, par, recordClear, isPremium]);
+  }, [won, level, state.moves, par, recordClear, isPremium, play]);
 
   const select = useCallback(
     (index: number) => {
@@ -81,13 +84,15 @@ function LevelSession({ level }: { level: number }) {
       if (canPour(state, selected, index)) {
         setHistory((h) => [...h, pour(state, selected, index)]);
         setSelected(null);
+        play('pop');
       } else {
         // Tapping an illegal target picks it up instead of doing nothing, which
         // is what players actually mean when they change their mind mid-move.
+        play('fail');
         setSelected(state.tubes[index]?.length ? index : null);
       }
     },
-    [selected, state, won],
+    [selected, state, won, play],
   );
 
   const undo = useCallback(() => {
@@ -105,8 +110,9 @@ function LevelSession({ level }: { level: number }) {
     if (!move) return false;
     setHistory((h) => [...h, pour(state, move.from, move.to)]);
     setSelected(null);
+    play('pop');
     return true;
-  }, [state]);
+  }, [state, play]);
 
   const onHint = useCallback(() => {
     const allowance = isPremium ? Number.POSITIVE_INFINITY : FREE_HINTS;
