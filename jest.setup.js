@@ -87,6 +87,16 @@ jest.mock('expo-tracking-transparency', () => ({
   requestTrackingPermissionsAsync: jest.fn().mockResolvedValue({ granted: false }),
 }));
 
+jest.mock('expo-audio', () => ({
+  createAudioPlayer: jest.fn(() => ({
+    play: jest.fn(),
+    pause: jest.fn(),
+    seekTo: jest.fn(),
+    remove: jest.fn(),
+  })),
+  setAudioModeAsync: jest.fn().mockResolvedValue(undefined),
+}));
+
 // One stable router object, so a test can assert on navigation by calling
 // `useRouter()` itself — a fresh set of spies per call would be unobservable.
 jest.mock('expo-router', () => {

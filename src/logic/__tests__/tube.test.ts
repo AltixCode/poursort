@@ -87,6 +87,36 @@ describe('pour', () => {
   });
 });
 
+describe('pour — TestFlight feedback: "the top color... should be moved"', () => {
+  // Beta feedback: "Instead of having the bottom-est color on the tube
+  // that's gonna be moved, it should be the top color as the logic is to
+  // pour the top-most liquid to other tubes to sort them out." This pins the
+  // rule down at the logic layer: `pour` must always move `tube[tube.length
+  // - 1]` (nearest the mouth), never `tube[0]` (the physical bottom).
+  it('moves the colour nearest the mouth (last array element), not the physical bottom (index 0)', () => {
+    // Bottom = 9 (a colour with no matching destination), top = 5 (matches
+    // the destination). If the bug were "pour reads the bottom", this pour
+    // would be illegal / would move colour 9 instead.
+    const next = pour(state([[9, 5], [5]]), 0, 1);
+    expect(next.tubes).toEqual([[9], [5, 5]]);
+  });
+
+  // Beta feedback: "this yellow-green-yellow tube can't be poured outside.
+  // Other full, multicolor tubes don't have this problem." A full tube whose
+  // top colour equals its bottom colour, with a different colour sandwiched
+  // between, must pour its single-unit top run exactly like any other full
+  // tube — this is not a distinct bug from the one above; the same
+  // last-element-is-top rule covers it.
+  it('pours a full "yellow-green-yellow"-shaped tube (top === bottom, distinct middle)', () => {
+    const YELLOW = 0;
+    const GREEN = 1;
+    const before = state([[YELLOW, GREEN, YELLOW], [YELLOW]], 3);
+    expect(canPour(before, 0, 1)).toBe(true);
+    const next = pour(before, 0, 1);
+    expect(next.tubes).toEqual([[YELLOW, GREEN], [YELLOW, YELLOW]]);
+  });
+});
+
 describe('legalMoves', () => {
   it('lists every legal pour', () => {
     expect(legalMoves(state([[1], [1], []]))).toEqual(
